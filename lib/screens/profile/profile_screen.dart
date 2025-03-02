@@ -8,11 +8,15 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:logger/logger.dart';
 import 'package:ontrack/providers/post_by_user_provider.dart';
 import 'package:ontrack/providers/user_provider.dart';
+import 'package:ontrack/resources/auth_methods.dart';
+import 'package:ontrack/resources/firestore_methods.dart';
+import 'package:ontrack/screens/add_product_screen.dart';
+import 'package:ontrack/screens/authentication/login_screen.dart';
+import 'package:ontrack/screens/profile/widgets/follow_button.dart';
+import 'package:ontrack/utils/helpers/box_decoration_helper.dart';
 import 'package:ontrack/utils/themes/app_colors.dart';
-import 'package:ontrack/utils/themes/theme_utils.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   final String uid;
@@ -32,50 +36,55 @@ class ProfileScreen extends ConsumerStatefulWidget {
 class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   bool isLoading = false;
   var userData = {};
+  int followers = 0;
+  int following = 0;
   int postLen = 0;
+  bool isFollowing = false;
 
   @override
   void initState() {
     super.initState();
-//addData();
+    getData();
   }
 
-  Future<void> _fetchPosts() async {
+  // Future<void> _fetchPosts() async {
+  //   try {
+  //     ref.read(userPostsProvider(widget.uid));
+  //   } catch (error) {
+  //     final logger = Logger();
+  //     logger.e('Error fetching posts in initState: $error');
+  //   }
+  // }
+
+  getData() async {
     try {
-      ref.read(userPostsProvider(widget.uid));
-    } catch (error) {
-      final logger = Logger();
-      logger.e('Error fetching posts in initState: $error');
+      var userSnap = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(widget.uid)
+          .get();
+
+// get post lENGTH
+      var postSnap = await FirebaseFirestore.instance
+          .collection('posts')
+          .where('uid', isEqualTo: widget.uid)
+          .get();
+
+      postLen = postSnap.docs.length;
+      userData = userSnap.data()!;
+      followers = userSnap.data()!['followers'].length;
+      following = userSnap.data()!['following'].length;
+      isFollowing = userSnap
+          .data()!['followers']
+          .contains(FirebaseAuth.instance.currentUser!.uid);
+
+      setState(() {});
+    } catch (e) {
+      Get.snackbar('Error', e.toString());
     }
+    setState(() {
+      isLoading = false;
+    });
   }
-
-//   getData() async {
-//     setState(() {
-//       isLoading = true;
-//     });
-//     try {
-//       var userSnap = await FirebaseFirestore.instance
-//           .collection('users')
-//           .doc(widget.uid)
-//           .get();
-
-// // get post lENGTH
-//       var postSnap = await FirebaseFirestore.instance
-//           .collection('posts')
-//           .where('uid', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
-//           .get();
-
-//       postLen = postSnap.docs.length;
-//       userData = userSnap.data()!;
-
-//       setState(() {});
-//     } catch (e) {
-//       Get.snackbar('Error', e.toString());
-//     }
-//     setState(() {
-//       isLoading = false;
-//     });
-//   }
 
 // addData() async {
 // UserProvider userProvider =
@@ -104,9 +113,24 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 // });
 // }
 
+  Stream<DocumentSnapshot> getUserStream(String uid) {
+    return FirebaseFirestore.instance.collection('users').doc(uid).snapshots();
+  }
+
+  Future<void> _onRefresh() async {
+    ref.invalidate(userPostsProvider(widget.uid));
+  }
+
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(userProvider);
+
+    final posts = ref.watch(userPostsProvider(widget.uid));
+    final postNotifier = ref.read(userPostsProvider(widget.uid).notifier);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      postNotifier.fetchUserPosts(widget.uid); // Fetch products
+    });
 
     if (user == null) {
       return Center(
@@ -116,7 +140,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       );
     }
 
-    final postsAsyncValue = ref.watch(userPostsProvider(widget.uid));
 //UserModel? user = Provider.of<UserProvider>(context).getUser;
 
     if (isLoading) {
@@ -197,6 +220,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
 // Profile Picture with Gradient Border
                         Expanded(
@@ -213,21 +237,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                       ),
                                       const SizedBox(width: 5),
                                       Text(
-                                        '150',
+                                        postLen.toString(),
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 18,
                                         ),
                                       ),
                                     ],
-                                  ),
-                                  OutlinedButton(
-                                    onPressed: () {},
-                                    child: Icon(
-                                      Icons.person_outline,
-                                      color:
-                                          ThemeUtils.dynamicTextColor(context),
-                                    ),
                                   ),
                                 ],
                               ),
@@ -238,22 +254,32 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                     children: [
                                       Icon(Feather.users),
                                       const SizedBox(width: 5),
-                                      Text(
-                                        '2.3K',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 18,
-                                        ),
+                                      StreamBuilder<DocumentSnapshot>(
+                                        stream: getUserStream(widget.uid),
+                                        builder: (context, snapshot) {
+                                          if (snapshot.hasData &&
+                                              snapshot.data!.exists) {
+                                            followers = snapshot
+                                                .data!['followers'].length;
+                                            return Text(
+                                              followers.toString(),
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 18,
+                                              ),
+                                            );
+                                          } else {
+                                            return Text(
+                                              '0',
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 18,
+                                              ),
+                                            );
+                                          }
+                                        },
                                       ),
                                     ],
-                                  ),
-                                  OutlinedButton(
-                                    onPressed: () {},
-                                    child: Icon(
-                                      Iconsax.message,
-                                      color:
-                                          ThemeUtils.dynamicTextColor(context),
-                                    ),
                                   ),
                                 ],
                               ),
@@ -266,21 +292,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                       Icon(FontAwesome.user_plus),
                                       const SizedBox(width: 5),
                                       Text(
-                                        '500',
+                                        following.toString(),
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 18,
                                         ),
                                       ),
                                     ],
-                                  ),
-                                  OutlinedButton(
-                                    onPressed: () {},
-                                    child: Icon(
-                                      Iconsax.location,
-                                      color:
-                                          ThemeUtils.dynamicTextColor(context),
-                                    ),
                                   ),
                                 ],
                               ),
@@ -291,96 +309,146 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     ),
                   ),
 
-// al_reem and Bio
-// Row(
-// mainAxisAlignment: MainAxisAlignment.center,
-// children: [
-// Padding(
-// padding: const EdgeInsets.symmetric(horizontal: 16.0),
-// child: Column(
-// crossAxisAlignment: CrossAxisAlignment.start,
-// children: [
-// Row(
-// mainAxisAlignment: MainAxisAlignment.spaceBetween,
-// children: [
-// const SizedBox(width: 10),
-// OutlinedButton(
-// onPressed: () {},
-// child: Icon(
-// Iconsax.add,
-// color: ThemeUtils.dynamicTextColor(context),
-// ),
-// ),
-// SizedBox(width: 5),
-// OutlinedButton(
-// onPressed: () {},
-// child: Icon(
-// Iconsax.message,
-// color: ThemeUtils.dynamicTextColor(context),
-// ),
-// ),
-// SizedBox(width: 5),
-// OutlinedButton(
-// onPressed: () {},
-// child: Row(
-// children: [
-// Icon(
-// Iconsax.location,
-// color: ThemeUtils.dynamicTextColor(context),
-// ),
-// ],
-// ),
-// ),
-// ],
-// ),
-// SizedBox(height: 5),
-// ],
-// ),
-// ),
-// ],
-// ),
-// Edit Profile Button
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      FirebaseAuth.instance.currentUser!.uid == widget.uid
+                          ? ElevatedButton(
+                              onPressed: () async {
+                                await AuthMethods().signOut();
+                                if (context.mounted) {
+                                  Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(
+                                      builder: (context) => const LoginScreen(),
+                                    ),
+                                  );
+                                }
+                              },
+                              child: Text('Sign Out'),
+                            )
+                          : isFollowing
+                              ? ElevatedButton(
+                                  onPressed: () async {
+                                    await FireStoreMethods().followUser(
+                                      FirebaseAuth.instance.currentUser!.uid,
+                                      userData['uid'],
+                                    );
 
-// Stats
-// Column(
-// children: const [
-// Text(
-// '150',
-// style: TextStyle(
-// fontWeight: FontWeight.bold,
-// fontSize: 18,
-// ),
-// ),
-// Text('Posts'),
-// ],
-// ),
-// Column(
-// children: const [
-// Text(
-// '2.3K',
-// style: TextStyle(
-// fontWeight: FontWeight.bold,
-// fontSize: 18,
-// ),
-// ),
-// Text('Followers'),
-// ],
-// ),
-// Column(
-// children: const [
-// Text(
-// '500',
-// style: TextStyle(
-// fontWeight: FontWeight.bold,
-// fontSize: 18,
-// ),
-// ),
-// Text('Following'),
-// ],
-// ),
+                                    setState(() {
+                                      isFollowing = false;
+                                      followers--;
+                                    });
+                                  },
+                                  child: Text('Unfollow'),
+                                )
+                              : ElevatedButton(
+                                  onPressed: () async {
+                                    await FireStoreMethods().followUser(
+                                      FirebaseAuth.instance.currentUser!.uid,
+                                      userData['uid'],
+                                    );
 
-// Live Restaurant Items - Horizontal Scroll
-// Live Restaurant Items Section Title
+                                    setState(() {
+                                      isFollowing = true;
+                                      followers++;
+                                    });
+                                  },
+                                  child: Text('Follow'))
+                    ],
+                  ),
+                  // al_reem and Bio
+                  // Row(
+                  // mainAxisAlignment: MainAxisAlignment.center,
+                  // children: [
+                  // Padding(
+                  // padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  // child: Column(
+                  // crossAxisAlignment: CrossAxisAlignment.start,
+                  // children: [
+                  // Row(
+                  // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  // children: [
+                  // const SizedBox(width: 10),
+                  // OutlinedButton(
+                  // onPressed: () {},
+                  // child: Icon(
+                  // Iconsax.add,
+                  // color: ThemeUtils.dynamicTextColor(context),
+                  // ),
+                  // ),
+                  // SizedBox(width: 5),
+                  // OutlinedButton(
+                  // onPressed: () {},
+                  // child: Icon(
+                  // Iconsax.message,
+                  // color: ThemeUtils.dynamicTextColor(context),
+                  // ),
+                  // ),
+                  // SizedBox(width: 5),
+                  // OutlinedButton(
+                  // onPressed: () {},
+                  // child: Row(
+                  // children: [
+                  // Icon(
+                  // Iconsax.location,
+                  // color: ThemeUtils.dynamicTextColor(context),
+                  // ),
+                  // ],
+                  // ),
+                  // ),
+                  // ],
+                  // ),
+                  // SizedBox(height: 5),
+                  // ],
+                  // ),
+                  // ),
+                  // ],
+                  // ),
+                  // Edit Profile Button
+
+                  // Stats
+                  // Column(
+                  // children: const [
+                  // Text(
+                  // '150',
+                  // style: TextStyle(
+                  // fontWeight: FontWeight.bold,
+                  // fontSize: 18,
+                  // ),
+                  // ),
+                  // Text('Posts'),
+                  // ],
+                  // ),
+                  // Column(
+                  // children: const [
+                  // Text(
+                  // '2.3K',
+                  // style: TextStyle(
+                  // fontWeight: FontWeight.bold,
+                  // fontSize: 18,
+                  // ),
+                  // ),
+                  // Text('Followers'),
+                  // ],
+                  // ),
+                  // Column(
+                  // children: const [
+                  // Text(
+                  // '500',
+                  // style: TextStyle(
+                  // fontWeight: FontWeight.bold,
+                  // fontSize: 18,
+                  // ),
+                  // ),
+                  // Text('Following'),
+                  // ],
+                  // ),
+
+                  // Live Restaurant Items - Horizontal Scroll
+                  // Live Restaurant Items Section Title
+                  SizedBox(
+                    height: 10,
+                  ),
                   Padding(
                     padding: const EdgeInsets.only(left: 16),
                     child: Row(
@@ -394,7 +462,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           ),
                         ),
                         IconButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              Get.to(() => ProductScreen());
+                            },
                             icon: Icon(
                               CupertinoIcons.arrow_right_circle,
                               color: AppColors.primaryColor,
@@ -417,33 +487,21 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           ),
                           child: Stack(
                             children: [
-// Item Container
                               Container(
                                 width: 80.w,
                                 height: 80.h,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(15.r),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.grey.withOpacity(0.2),
-                                      spreadRadius: 2,
-                                      blurRadius: 6,
-                                      offset: const Offset(0, 3),
-                                    ),
-                                  ],
-                                ),
+                                decoration: getDynamicBoxDecoration(context),
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(15.r),
                                   child: Stack(
                                     children: [
-// Item Image
+                                      // Item Image
                                       Image.asset(
                                         'assets/images/food$index.jpg',
                                         fit: BoxFit.cover,
                                         width: 80.w,
                                         height: 80.h,
-                                      ),
-// Item Name Overlay
+                                      ), // Item Name Overlay
                                       Align(
                                         alignment: Alignment.bottomCenter,
                                         child: Container(
@@ -467,7 +525,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                   ),
                                 ),
                               ),
-// Add Button
+                              // Add Button
                               Positioned(
                                 top: 5.h,
                                 right: 5.h,
@@ -492,8 +550,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                   ),
                                 ),
                               ),
-
-// Rating Badge
+                              // Rating Badge
                               Positioned(
                                 top: 5.h,
                                 left: 5.w,
@@ -543,80 +600,67 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   const SizedBox(height: 10),
 
 // TabBarView (Posts, Reels, Tagged)
-                  postsAsyncValue.when(
-                    data: (posts) {
-                      if (posts.isEmpty) {
-                        return const Center(child: Text("No posts found."));
-                      }
-                      return SizedBox(
-                        height: 400,
-                        child: GridView.builder(
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 3,
-                            crossAxisSpacing: 8,
-                            mainAxisSpacing: 8,
-                            childAspectRatio: 0.8, // Adjusted for better layout
-                          ),
-                          padding: const EdgeInsets.all(8),
-                          itemCount: posts.length,
-                          itemBuilder: (context, index) {
-                            final post = posts[index];
-                            return Card(
-                              margin: const EdgeInsets.symmetric(vertical: 10),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Expanded(
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(10),
-                                      child: Image.network(
-                                        post.postUrl,
-                                        fit: BoxFit.cover,
-                                        width: double.infinity,
-                                        height: 150, // Adjusted for uniformity
-                                      ),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Row(
-                                      children: [
-                                        Icon(Icons.favorite,
-                                            color: post.likes.isNotEmpty
-                                                ? Colors.red
-                                                : Colors.grey),
-                                        const SizedBox(width: 5),
-                                        Expanded(
-                                          child: Text(
-                                            "${post.likeCount} likes",
-                                            style: const TextStyle(
-                                                fontWeight: FontWeight.w600),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
+                  RefreshIndicator(
+                    onRefresh: _onRefresh,
+                    child: SizedBox(
+                      height: 400,
+                      child: GridView.builder(
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 3,
+                          crossAxisSpacing: 8,
+                          mainAxisSpacing: 8,
+                          childAspectRatio: 0.8, // Adjusted for better layout
                         ),
-                      );
-                    },
-                    loading: () =>
-                        const Center(child: CircularProgressIndicator()),
-                    error: (error, stackTrace) {
-                      final logger = Logger();
-                      logger.e('Error: $error');
-                      return Center(child: Text('Error: $error'));
-                    },
-                  ),
-
-// Grid of Posts
+                        padding: const EdgeInsets.all(8),
+                        itemCount: posts.length,
+                        itemBuilder: (context, index) {
+                          final post = posts[index];
+                          return Card(
+                            margin: const EdgeInsets.symmetric(vertical: 10),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Expanded(
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(10),
+                                    child: Image.network(
+                                      post.postUrl,
+                                      fit: BoxFit.cover,
+                                      width: double.infinity,
+                                      height: 150, // Adjusted for uniformity
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.favorite,
+                                          color: post.likes.isNotEmpty
+                                              ? Colors.red
+                                              : Colors.grey),
+                                      const SizedBox(width: 5),
+                                      Expanded(
+                                        child: Text(
+                                          "${post.likeCount} likes",
+                                          style: const TextStyle(
+                                              fontWeight: FontWeight.w600),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ), // Grid of Posts
                 ],
               ),
             ),

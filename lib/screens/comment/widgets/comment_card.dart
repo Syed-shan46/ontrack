@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:ontrack/models/comment_model.dart';
-import 'package:ontrack/screens/profile_screen.dart';
+import 'package:ontrack/screens/profile/profile_screen.dart';
 import 'package:ontrack/utils/themes/theme_utils.dart';
 
 class CommentCard extends ConsumerWidget {

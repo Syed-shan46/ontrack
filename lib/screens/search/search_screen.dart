@@ -7,7 +7,7 @@ import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:ontrack/common/style/app_style.dart';
 import 'package:ontrack/providers/search_provider.dart';
-import 'package:ontrack/screens/profile_screen.dart';
+import 'package:ontrack/screens/profile/profile_screen.dart';
 import 'package:ontrack/utils/themes/app_colors.dart';
 import 'package:ontrack/utils/themes/theme_utils.dart';
 

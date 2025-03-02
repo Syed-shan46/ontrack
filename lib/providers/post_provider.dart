@@ -9,6 +9,15 @@ class PostNotifier extends StateNotifier<List<Post>> {
     state = posts;
   }
 
+  Future<void> fetchPosts() async {
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('posts')
+        .orderBy('datePublished', descending: true)
+        .get();
+
+    state = querySnapshot.docs.map((doc) => Post.fromSnap(doc)).toList();
+  }
+
   Future<void> toggleLike(
       String postId, String userId, List<dynamic> currentLikes) async {
     final isLiked = currentLikes.contains(userId);

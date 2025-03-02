@@ -41,7 +41,7 @@ class ReelsScreen extends StatelessWidget {
               // Reels Info and Actions
               Positioned(
                 left: 15,
-                bottom: 20,
+                bottom: 60,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [

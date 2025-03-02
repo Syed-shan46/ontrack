@@ -24,38 +24,34 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  // This widget is the root of your application.
+  final ValueNotifier<User?> _userNotifier =
+      ValueNotifier(FirebaseAuth.instance.currentUser);
+
+  @override
+  void initState() {
+    super.initState();
+    FirebaseAuth.instance.userChanges().listen((user) {
+      _userNotifier.value = user;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
       child: GetMaterialApp(
+        debugShowCheckedModeBanner: false,
         title: 'Flutter Demo',
         themeMode: ThemeMode.system,
         theme: lightTheme,
         darkTheme: darkTheme,
-        home: StreamBuilder(
-          stream: FirebaseAuth.instance.userChanges(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.active) {
-              // Checking if the snapshot has any data or not
-              if (snapshot.hasData) {
-                // if snapshot has data which means user is logged in then we check the width of screen and accordingly display the screen layout
-                return const NavigationMenu();
-              } else if (snapshot.hasError) {
-                return Center(
-                  child: Text('${snapshot.error}'),
-                );
-              }
+        home: ValueListenableBuilder<User?>(
+          valueListenable: _userNotifier,
+          builder: (context, user, child) {
+            if (user != null) {
+              return const NavigationMenu();
+            } else {
+              return const LoginScreen();
             }
-
-            // means connection to future hasnt been made yet
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-
-            return const LoginScreen();
           },
         ),
       ),

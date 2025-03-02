@@ -1,12 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:get/get.dart';
 import 'package:ontrack/providers/user_provider.dart';
 import 'package:ontrack/screens/add_post_screen.dart';
 import 'package:ontrack/screens/authentication/login_screen.dart';
-import 'package:ontrack/screens/home_screen.dart';
-import 'package:ontrack/screens/profile_screen.dart';
+import 'package:ontrack/screens/home/home_screen.dart';
+import 'package:ontrack/screens/profile/profile_screen.dart';
 import 'package:ontrack/screens/reels_screen.dart';
 import 'package:ontrack/screens/search/search_screen.dart';
 import 'package:ontrack/utils/themes/app_colors.dart';
@@ -29,7 +28,7 @@ class _NavigationMenuState extends ConsumerState<NavigationMenu> {
         body: const LoginScreen(),
       );
     }
-    final List<Widget> _screens = [
+    final List<Widget> screens = [
       const HomeScreen(),
       const SearchScreen(),
       AddPostScreen(),
@@ -50,10 +49,8 @@ class _NavigationMenuState extends ConsumerState<NavigationMenu> {
           BottomNavigationBarItem(
               icon: Icon(CupertinoIcons.add_circled, size: 26)),
           BottomNavigationBarItem(
-              icon: Icon(
-            Icons.video_collection_outlined,
-          )),
-          BottomNavigationBarItem(icon: Icon(CupertinoIcons.person)),
+              icon: Icon(CupertinoIcons.play_circle, size: 26)),
+          BottomNavigationBarItem(icon: Icon(CupertinoIcons.person, size: 26)),
         ],
         onTap: (index) {
           setState(() {
@@ -64,7 +61,7 @@ class _NavigationMenuState extends ConsumerState<NavigationMenu> {
       ),
       tabBuilder: (context, index) {
         return CupertinoTabView(
-          builder: (context) => _screens[index],
+          builder: (context) => screens[index],
         );
       },
     );

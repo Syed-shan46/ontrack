@@ -90,7 +90,7 @@ class CommentsScreenState extends ConsumerState<CommentsScreen> {
           child: Row(
             children: [
               CircleAvatar(
-                backgroundImage: NetworkImage(user!.photoUrl),
+                backgroundImage: NetworkImage(user.photoUrl),
                 radius: 18,
               ),
               Expanded(

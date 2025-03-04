@@ -1,5 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:ontrack/common/controllers/home_controller.dart';
@@ -29,17 +30,21 @@ class MyBannerSlider extends StatelessWidget {
         // Carousel Slider
         CarouselSlider(
           options: CarouselOptions(
-            height: 125.h,
-            viewportFraction: 1,
+            padEnds: false,
+            enlargeCenterPage: false,
+            scrollPhysics: BouncingScrollPhysics(),
+            height: 105.h,
+            viewportFraction: 0.9,
             onPageChanged: (index, _) => controller.updatePageIndicator(index),
             autoPlay: true,
           ),
           items: banners.map((banner) {
-            return MyBannerWidget(
-                imageUrl: banner['image']); // Use your widget here
+            return Container(
+              margin: EdgeInsets.only(left: 11),
+              child: MyBannerWidget(imageUrl: banner['image']),
+            ); // Use your widget here
           }).toList(),
         ),
-        SizedBox(height: 2),
         MyDotNavigation(controller: controller, dotCount: banners.length),
       ],
     );

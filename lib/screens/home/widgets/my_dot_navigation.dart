@@ -23,7 +23,7 @@ class MyDotNavigation extends StatelessWidget {
                 AnimatedContainer(
                   duration: const Duration(
                       milliseconds: 500), // Set the smooth animation duration
-                  height: 5,
+                  height: 3,
                   width: controller.carousalCurrentIndex.value == i
                       ? 20
                       : 15, // Dynamically resize for active dot

@@ -12,9 +12,8 @@ import 'package:ontrack/providers/post_by_user_provider.dart';
 import 'package:ontrack/providers/user_provider.dart';
 import 'package:ontrack/resources/auth_methods.dart';
 import 'package:ontrack/resources/firestore_methods.dart';
-import 'package:ontrack/screens/add_product_screen.dart';
+import 'package:ontrack/screens/products/add_product_screen.dart';
 import 'package:ontrack/screens/authentication/login_screen.dart';
-import 'package:ontrack/screens/profile/widgets/follow_button.dart';
 import 'package:ontrack/utils/helpers/box_decoration_helper.dart';
 import 'package:ontrack/utils/themes/app_colors.dart';
 

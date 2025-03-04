@@ -132,57 +132,56 @@ class _HomeHeaderState extends ConsumerState<HomeHeader> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(left: 2.w, top: 5.h, bottom: 2.h),
-      child: Row(
-        children: [
-          IconButton(
-            onPressed: () {
-              ref.read(userProvider.notifier).logout();
-            },
-            icon: Icon(
-              AntDesign.menu_unfold,
-              color: ThemeUtils.dynamicTextColor(context),
+    return SafeArea(
+      child: Padding(
+        padding: EdgeInsets.only(left: 2.w, top: 5.h, bottom: 2.h),
+        child: Row(
+          children: [
+            IconButton(
+              onPressed: () {
+                ref.read(userProvider.notifier).logout();
+              },
+              icon: Icon(
+                AntDesign.home,
+                color: ThemeUtils.dynamicTextColor(context),
+              ),
             ),
-          ),
-          Icon(
-            Icons.home,
-            color: AppColors.primaryColor,
-            size: 17.sp,
-          ),
-          // Left side with welcome title
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min, // Adjusts height to fit content
-              children: [
-                scanning
-                    ? const SpinKitThreeBounce(
-                        color: AppColors.primaryColor, size: 10)
-                    : Text(
-                        address,
-                        style: TextStyle(
-                          fontSize: 9.sp,
-                          fontWeight: FontWeight.normal,
+
+            // Left side with welcome title
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min, // Adjusts height to fit content
+                children: [
+                  scanning
+                      ? const SpinKitThreeBounce(
+                          color: AppColors.primaryColor, size: 10)
+                      : Text(
+                          address,
+                          style: TextStyle(
+                            color: ThemeUtils.dynamicTextColor(context),
+                            fontSize: 9.sp,
+                            fontWeight: FontWeight.normal,
+                          ),
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-              ],
+                ],
+              ),
             ),
-          ),
-          Icon(
-            CupertinoIcons.chevron_forward,
-            size: 12.sp,
-          ),
-          // Cart icon on the right side
-          Padding(
-            padding: const EdgeInsets.only(right: 5), // Consistent padding
-            child: Text(
-              getTimeOfDay(),
-              style: const TextStyle(fontSize: 25),
+            Icon(
+              CupertinoIcons.chevron_forward,
+              size: 12.sp,
             ),
-          ),
-        ],
+            // Cart icon on the right side
+            Padding(
+              padding: const EdgeInsets.only(right: 5), // Consistent padding
+              child: Text(
+                getTimeOfDay(),
+                style: const TextStyle(fontSize: 25),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

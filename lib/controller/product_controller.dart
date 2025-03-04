@@ -7,13 +7,20 @@ class ProductController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   Future<void> addProduct(Product product) async {
-    final user = _auth.currentUser;
+    final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
-      await _firestore
+      final productRef = _firestore
           .collection('users')
           .doc(user.uid)
           .collection('products')
-          .add(product.toMap());
+          .doc(); // Create a reference with a generated ID
+
+      final newProduct = product.toMap();
+      newProduct['id'] = productRef.id; // Store the Firestore-generated ID
+
+      await productRef.set(newProduct); // Use set() instead of add()
+
+      print("✅ Product added with ID: ${productRef.id}");
     } else {
       throw Exception("User not logged in");
     }

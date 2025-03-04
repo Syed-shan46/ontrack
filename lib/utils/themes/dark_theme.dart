@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:ontrack/utils/themes/app_colors.dart';
-import 'package:ontrack/utils/themes/text_theme.dart';
 
 final ThemeData darkTheme = ThemeData(
     brightness: Brightness.dark,
@@ -25,7 +24,8 @@ final ThemeData darkTheme = ThemeData(
         fontWeight: FontWeight.bold,
       ),
     ),
-    textTheme: textTheme.apply(bodyColor: AppColors.lightTextColor),
+
+    //textTheme: textTheme.apply(bodyColor: AppColors.lightTextColor),
     buttonTheme: const ButtonThemeData(
       buttonColor: AppColors.primaryColor,
       textTheme: ButtonTextTheme.primary,
@@ -35,6 +35,18 @@ final ThemeData darkTheme = ThemeData(
       // Use primary color for dark theme
       selectedItemColor: AppColors.primaryColor, // Selected item color
       unselectedItemColor: Colors.grey, // Unselected item color
+    ),
+    inputDecorationTheme: const InputDecorationTheme(
+      labelStyle: TextStyle(color: AppColors.lightTextColor),
+      hintStyle: TextStyle(color: AppColors.lightTextColor),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.all(Radius.circular(16)),
+        borderSide: BorderSide(color: AppColors.primaryColor),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.all(Radius.circular(16)),
+        borderSide: BorderSide(color: AppColors.lightTextColor),
+      ),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
         style: ButtonStyle(

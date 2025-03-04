@@ -33,6 +33,16 @@ final ThemeData lightTheme = ThemeData(
     buttonColor: AppColors.primaryColor,
     textTheme: ButtonTextTheme.primary,
   ),
+  inputDecorationTheme: const InputDecorationTheme(
+    labelStyle: TextStyle(color: AppColors.darkTextColor),
+    hintStyle: TextStyle(color: AppColors.darkTextColor),
+    focusedBorder: OutlineInputBorder(
+      borderSide: BorderSide(color: AppColors.primaryColor),
+    ),
+    enabledBorder: OutlineInputBorder(
+      borderSide: BorderSide(color: AppColors.darkTextColor),
+    ),
+  ),
   bottomNavigationBarTheme: const BottomNavigationBarThemeData(
     backgroundColor: Colors.green,
     selectedItemColor: AppColors.primaryColor, // Selected item color

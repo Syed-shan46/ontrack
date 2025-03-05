@@ -34,9 +34,8 @@ class ProductController {
           .doc(user.uid)
           .collection('products')
           .snapshots()
-          .map((snapshot) => snapshot.docs
-              .map((doc) => Product.fromFirestore(doc.data()))
-              .toList());
+          .map((snapshot) =>
+              snapshot.docs.map((doc) => Product.fromFirestore(doc)).toList());
     } else {
       return Stream.value([]); // Return an empty stream if no user
     }

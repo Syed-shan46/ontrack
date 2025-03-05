@@ -1,12 +1,10 @@
 import 'dart:math';
-import 'package:buttons_tabbar/buttons_tabbar.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
@@ -1328,8 +1326,8 @@ Widget buildStory(Map<String, String> user, AnimationController controller,
                       Colors.green.withOpacity(0.8),
                       ThemeUtils.dynamicTextColor(context)
                     ],
-                    stops: const [0.0, 0.5, 1.0],
-                    transform: GradientRotation(controller.value * 3 * pi),
+                    //stops: const [0.0, 0.5, 1.0],
+                    //transform: GradientRotation(controller.value * 3 * pi),
                   ),
                 ),
               );

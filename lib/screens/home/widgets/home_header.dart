@@ -74,9 +74,11 @@ class _HomeHeaderState extends ConsumerState<HomeHeader> {
 
   // Get the current location and update the UI
   Future<void> getLocation() async {
-    setState(() {
-      scanning = true;
-    });
+    if (mounted) {
+      setState(() {
+        scanning = true;
+      });
+    }
 
     try {
       // Use locationSettings for specifying accuracy
@@ -102,9 +104,11 @@ class _HomeHeaderState extends ConsumerState<HomeHeader> {
       print("Error: ${e.toString()}");
     }
 
-    setState(() {
-      scanning = false;
-    });
+    if (mounted) {
+      setState(() {
+        scanning = false;
+      });
+    }
   }
 
   // Fetch address using Nominatim API

@@ -85,7 +85,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         }
       } catch (e) {
         print('Login Error: $e');
-        if (context.mounted) {
+        if (mounted) {
           Get.snackbar('Error', 'Something went wrong, please try again.');
         }
       }
@@ -100,10 +100,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     if (value == null || value.isEmpty) {
       return 'Please enter your email';
     }
-    String pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$';
-    RegExp regex = RegExp(pattern);
-    if (!regex.hasMatch(value)) {
-      return 'Enter a valid email address';
+    try {
+      String pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$';
+      RegExp regex = RegExp(pattern);
+      if (!regex.hasMatch(value)) {
+        return 'Enter a valid email address';
+      }
+    } catch (e) {
+      return 'Error validating email';
     }
     return null;
   }

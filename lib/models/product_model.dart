@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class Product {
   final String id;
   final String name;
@@ -19,12 +21,13 @@ class Product {
     };
   }
 
-  factory Product.fromFirestore(Map<String, dynamic> data) {
+  factory Product.fromFirestore(DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>;
     return Product(
-      id: data['id'] ?? '',
+      id: doc.id,
       name: data['name'] ?? '',
       photoUrl: data['photoUrl'] ?? '',
-      price: (data['price'] ?? 0.0).toDouble(),
+      price: (data['price'] ?? 0).toDouble(),
     );
   }
 }

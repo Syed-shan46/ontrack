@@ -90,9 +90,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         }
       }
 
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
@@ -152,6 +154,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
                       validator: _validateEmail,
+                      style: TextStyle(
+                          color: ThemeUtils.dynamicTextColor(context)),
                       decoration: InputDecoration(
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(15.0),
@@ -178,6 +182,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     TextFormField(
                       controller: _passwordController,
                       obscureText: true,
+                      style: TextStyle(
+                          color: ThemeUtils.dynamicTextColor(context)),
                       keyboardType: TextInputType.visiblePassword,
                       validator: _validatePassword,
                       decoration: InputDecoration(

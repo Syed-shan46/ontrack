@@ -18,52 +18,18 @@ class MyPrimaryHeaderContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MyCurvedWidget(
-      child: Container(
-        width: MediaQuery.of(context).size.width,
-        height: height,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Colors.blue.shade900,
-              Colors.blue.shade800,
-              Colors.blue.shade700,
-              Colors.blue.shade600,
-            ],
+      child: Column(
+        children: [
+          Container(
+            width: MediaQuery.of(context).size.width,
+            height: height,
+            padding: const EdgeInsets.all(0),
+            child: Image.asset(
+              'assets/images/restaurant.jpg',
+              fit: BoxFit.cover,
+            ),
           ),
-        ),
-        padding: const EdgeInsets.all(0),
-        child: Stack(
-          children: [
-            showContainer
-                ? Positioned(
-                    top: -70,
-                    right: -70,
-                    child: MyCircularContainer(
-                      width: 205,
-                      height: 205,
-                      radius: 400,
-                      backgroundColor: Colors.white.withOpacity(0.1),
-                    ),
-                  )
-                : const SizedBox(
-                    height: null,
-                  ),
-            showContainer
-                ? Positioned(
-                    top: -70,
-                    right: -25,
-                    child: MyCircularContainer(
-                        width: 205,
-                        height: 205,
-                        radius: 400,
-                        backgroundColor: Colors.white.withOpacity(0.1)),
-                  )
-                : const SizedBox(
-                    height: null,
-                  ),
-            child,
-          ],
-        ),
+        ],
       ),
     );
   }

@@ -178,201 +178,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
               SizedBox(height: MySizes.spaceBtwSections),
 
               // Restaurant posts
-              RestaurnatPosts(posts, user),
-
-              // ListView.builder(
-              //   controller: _scrollController,
-              //   key: PageStorageKey<String>('posts'),
-              //   physics: NeverScrollableScrollPhysics(),
-              //   shrinkWrap: true,
-              //   itemCount: posts.length, // Number of posts
-              //   itemBuilder: (context, index) {
-              //     return Padding(
-              //       padding:
-              //           EdgeInsets.symmetric(horizontal: 5.w, vertical: 3.h),
-              //       child: Column(
-              //         crossAxisAlignment: CrossAxisAlignment.start,
-              //         children: [
-              //           Stack(
-              //             children: [
-              //               GestureDetector(
-              //                 onDoubleTap: () async {
-              //                   ref.read(postProvider.notifier).toggleLike(
-              //                       posts[index].postId,
-              //                       user!.uid,
-              //                       posts[index].likes);
-              //                   if (mounted) {
-              //                     setState(() {
-              //                       isLikeAnimating = true;
-              //                     });
-              //                   }
-              //                 },
-              //                 child: Stack(
-              //                   alignment: Alignment.center,
-              //                   children: [
-              //                     ClipRRect(
-              //                       borderRadius: BorderRadius.circular(20.r),
-              //                       child: CachedNetworkImage(
-              //                         imageUrl: posts[index].postUrl,
-              //                         height: 250.h,
-              //                         width: double.infinity,
-              //                         fit: BoxFit.cover,
-              //                       ),
-              //                     ),
-              //                     AnimatedOpacity(
-              //                       duration:
-              //                           const Duration(milliseconds: 200),
-              //                       opacity: isLikeAnimating ? 1 : 0,
-              //                       child: LikeAnimation(
-              //                         isAnimating: isLikeAnimating,
-              //                         duration: const Duration(
-              //                           milliseconds: 400,
-              //                         ),
-              //                         onEnd: () {
-              //                           if (mounted) {
-              //                             setState(() {
-              //                               isLikeAnimating = false;
-              //                             });
-              //                           }
-              //                         },
-              //                         child: const Icon(
-              //                           Icons.favorite,
-              //                           color: Colors.white,
-              //                           size: 120,
-              //                         ),
-              //                       ),
-              //                     ),
-              //                   ],
-              //                 ),
-              //               ),
-              //               Positioned(
-              //                 top: 0,
-              //                 left: 0,
-              //                 right: 0,
-              //                 child: Container(
-              //                   decoration: BoxDecoration(
-              //                     borderRadius: BorderRadius.only(
-              //                       topLeft: Radius.circular(20.r),
-              //                       topRight: Radius.circular(20.r),
-              //                     ),
-              //                     gradient: LinearGradient(
-              //                       begin: Alignment.topCenter,
-              //                       end: Alignment.bottomCenter,
-              //                       colors: [
-              //                         Colors.black.withAlpha(
-              //                             50), // Semi-transparent overlay
-              //                         Colors.black26,
-              //                       ],
-              //                     ),
-              //                   ),
-              //                 ),
-              //               ),
-              //             ],
-              //           ),
-              //           Padding(
-              //             padding: EdgeInsets.symmetric(),
-              //             child: Row(
-              //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              //               children: [
-              //                 Row(
-              //                   children: [
-              //                     LikeAnimation(
-              //                       isAnimating: posts[index]
-              //                           .likes
-              //                           .contains(user!.uid),
-              //                       child: IconButton(
-              //                         icon: posts[index]
-              //                                 .likes
-              //                                 .contains(user.uid)
-              //                             ? Icon(Iconsax.heart5,
-              //                                 color: Colors.red)
-              //                             : Icon(Iconsax.heart,
-              //                                 color:
-              //                                     ThemeUtils.dynamicTextColor(
-              //                                         context)),
-              //                         onPressed: () => ref
-              //                             .read(postProvider.notifier)
-              //                             .toggleLike(posts[index].postId,
-              //                                 user.uid, posts[index].likes),
-              //                       ),
-              //                     ),
-              //                     SizedBox(width: 5.w),
-              //                     IconButton(
-              //                       icon: Icon(
-              //                         Iconsax.message,
-              //                         color: ThemeUtils.dynamicTextColor(
-              //                             context),
-              //                       ),
-              //                       onPressed: () {
-              //                         Get.to(
-              //                           () => CommentsScreen(
-              //                             postId: posts[index].postId,
-              //                             username: user.username,
-              //                             uid: posts[index].uid,
-              //                             profilePic: user.photoUrl,
-              //                           ),
-              //                         );
-              //                       },
-              //                     ),
-              //                     SizedBox(width: 5.w),
-              //                     IconButton(
-              //                       icon: Icon(
-              //                         Iconsax.send_2,
-              //                         color: ThemeUtils.dynamicTextColor(
-              //                             context),
-              //                       ),
-              //                       onPressed: () {},
-              //                     ),
-              //                   ],
-              //                 ),
-              //                 IconButton(
-              //                   icon: Icon(
-              //                     Iconsax.bookmark,
-              //                     color: ThemeUtils.dynamicTextColor(context),
-              //                   ),
-              //                   onPressed: () {},
-              //                 ),
-              //               ],
-              //             ),
-              //           ),
-              //           Padding(
-              //             padding: EdgeInsets.symmetric(horizontal: 12.w),
-              //             child: Text(
-              //               '${posts[index].likeCount} likes',
-              //               style: TextStyle(
-              //                   fontWeight: FontWeight.bold,
-              //                   color: ThemeUtils.dynamicTextColor(context)),
-              //             ),
-              //           ),
-              //           // Padding(
-              //           //   padding: EdgeInsets.symmetric(
-              //           //       horizontal: 12.w, vertical: 5.h),
-              //           //   child: Text(
-              //           //     'Liked by ${posts[index].likes.join(', ')}',
-              //           //     style: TextStyle(
-              //           //       color: ThemeUtils.dynamicTextColor(context),
-              //           //       fontSize: 14.sp,
-              //           //     ),
-              //           //   ),
-              //           // ),
-              //           Padding(
-              //             padding: EdgeInsets.symmetric(
-              //                 horizontal: 12.w, vertical: 5.h),
-              //             child: Text(
-              //               posts[index].description,
-              //               style: TextStyle(
-              //                 color: ThemeUtils.dynamicTextColor(context),
-              //                 fontSize: 14.sp,
-              //               ),
-              //             ),
-              //           ),
-
-              //           SizedBox(height: 10.h),
-              //         ],
-              //       ),
-              //     );
-              //   },
-              // ),
+              restaurnatPosts(posts, user),
             ],
           ),
         ),
@@ -380,7 +186,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     );
   }
 
-  ListView RestaurnatPosts(List<Post> posts, UserModel? user) {
+  ListView restaurnatPosts(List<Post> posts, UserModel? user) {
     return ListView.builder(
       controller: _scrollController,
       shrinkWrap: true,
@@ -869,7 +675,7 @@ class CategoryTabbar extends StatelessWidget {
         children: [
           TabBar(
             tabAlignment: TabAlignment.start,
-            labelPadding: EdgeInsets.symmetric(horizontal: 11.w),
+            labelPadding: EdgeInsets.symmetric(horizontal: 12.w),
             dragStartBehavior: DragStartBehavior.start,
             splashFactory: NoSplash.splashFactory,
             dividerColor: Colors.transparent,
@@ -1323,7 +1129,7 @@ Widget buildStory(Map<String, String> user, AnimationController controller,
                     endAngle: 2 * pi,
                     colors: [
                       ThemeUtils.dynamicTextColor(context),
-                      Colors.green.withOpacity(0.8),
+                      AppColors.primaryColor.withOpacity(0.8),
                       ThemeUtils.dynamicTextColor(context)
                     ],
                     //stops: const [0.0, 0.5, 1.0],

@@ -20,7 +20,8 @@ import 'package:ontrack/utils/themes/theme_utils.dart';
 import 'package:uuid/uuid.dart';
 
 class ProductScreen extends StatefulWidget {
-  const ProductScreen({super.key});
+  final String uid;
+  const ProductScreen({super.key, required this.uid});
 
   @override
   ProductScreenState createState() => ProductScreenState();
@@ -181,7 +182,9 @@ class ProductScreenState extends State<ProductScreen> {
                 Heading(
                   title: 'Edit & Delete',
                   ontap: () {
-                    Get.to(() => AllLiveItemsScreen());
+                    Get.to(() => AllLiveItemsScreen(
+                          uid: widget.uid,
+                        ));
                   },
                 ),
                 Expanded(

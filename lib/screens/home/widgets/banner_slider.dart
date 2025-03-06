@@ -1,6 +1,5 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:ontrack/common/controllers/home_controller.dart';
@@ -12,11 +11,10 @@ class MyBannerSlider extends StatelessWidget {
 
   List<Map<String, dynamic>> getDummyBanners() {
     return [
-      {
-        'image': 'assets/banners/bn-1.jpg'
-      }, // Replace with your dummy image paths
-      {'image': 'assets/banners/bn-2.jpg'},
-      {'image': 'assets/banners/bn-3.jpg'},
+      {'image': 'assets/banners/b4.jpg'}, // Replace with your dummy image paths
+      {'image': 'assets/banners/b5.jpg'},
+      {'image': 'assets/banners/b6.jpg'},
+      {'image': 'assets/banners/b7.jpg'},
     ];
   }
 
@@ -33,7 +31,7 @@ class MyBannerSlider extends StatelessWidget {
             padEnds: false,
             enlargeCenterPage: false,
             scrollPhysics: BouncingScrollPhysics(),
-            height: 105.h,
+            height: 110.h,
             viewportFraction: 0.9,
             onPageChanged: (index, _) => controller.updatePageIndicator(index),
             autoPlay: true,

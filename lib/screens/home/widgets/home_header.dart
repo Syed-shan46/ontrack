@@ -8,7 +8,6 @@ import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
-import 'package:iconsax/iconsax.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:ontrack/providers/user_provider.dart';
 import 'package:ontrack/utils/themes/app_colors.dart';

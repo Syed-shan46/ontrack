@@ -25,8 +25,8 @@ class MyDotNavigation extends StatelessWidget {
                       milliseconds: 500), // Set the smooth animation duration
                   height: 3,
                   width: controller.carousalCurrentIndex.value == i
-                      ? 20
-                      : 15, // Dynamically resize for active dot
+                      ? 15
+                      : 10, // Dynamically resize for active dot
                   decoration: BoxDecoration(
                     color: controller.carousalCurrentIndex.value == i
                         ? AppColors.primaryColor

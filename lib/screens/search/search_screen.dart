@@ -7,7 +7,7 @@ import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:ontrack/common/style/app_style.dart';
 import 'package:ontrack/providers/search_provider.dart';
-import 'package:ontrack/screens/profile/profile_screen.dart';
+import 'package:ontrack/screens/profile/user_profile_screen.dart';
 import 'package:ontrack/utils/themes/app_colors.dart';
 import 'package:ontrack/utils/themes/theme_utils.dart';
 
@@ -61,7 +61,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
               final user = users[index];
               return GestureDetector(
                 onTap: () {
-                  Get.to(() => ProfileScreen(
+                  Get.to(() => UserProfileScreen(
                         uid: user.uid,
                         username: user.username,
                         photoUrl: user.photoUrl,
@@ -71,7 +71,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                   height: 70.h,
                   padding: EdgeInsets.all(5.h),
                   decoration: BoxDecoration(
-                    color: Colors.grey.withOpacity(0.1),
+                    color: Colors.grey.withAlpha(40),
                     borderRadius: const BorderRadius.all(Radius.circular(10)),
                   ),
                   child: Row(

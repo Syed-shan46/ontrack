@@ -178,7 +178,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
               SizedBox(height: MySizes.spaceBtwSections),
 
               // Restaurant posts
-              restaurnatPosts(posts, user),
+
+              user == null
+                  ? SizedBox(
+                      child: ElevatedButton(
+                        onPressed: () {},
+                        child: Text(
+                          'view posts',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    )
+                  : restaurnatPosts(posts, user),
+
+              SizedBox(height: MySizes.spaceBtwSections * 2),
             ],
           ),
         ),
@@ -726,215 +739,221 @@ class CategoryTabbar extends StatelessWidget {
                 Stack(
                   children: [
                     SizedBox(
-                      height: 150.h,
-                      child: ListView.builder(
-                        physics: const BouncingScrollPhysics(),
+                      child: Padding(
+                        padding: const EdgeInsets.only(bottom: 10),
+                        child: ListView.builder(
+                          physics: const BouncingScrollPhysics(),
+                          scrollDirection: Axis.horizontal,
+                          key: PageStorageKey('live_items'),
+                          itemCount: 3, // Number of items
+                          clipBehavior: Clip.none,
 
-                        scrollDirection: Axis.horizontal,
-                        key: PageStorageKey('live_items'),
-                        itemCount: 3, // Number of items
-                        clipBehavior: Clip.none,
-
-                        itemBuilder: (context, index) {
-                          return GestureDetector(
-                            child: Padding(
-                              padding: EdgeInsets.only(
-                                right: 12.w,
-                              ),
-                              child: LayoutBuilder(
-                                  builder: (context, constraints) {
-                                return Container(
-                                  width: width * .39,
-                                  decoration: getDynamicBoxDecoration(context),
-                                  child: Column(
-                                    // Use Column instead of ListView
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      // Image Section
-                                      Stack(
-                                        children: [
-                                          ClipRRect(
-                                            borderRadius: BorderRadius.only(
-                                              topLeft: Radius.circular(12.w),
-                                              topRight: Radius.circular(12.w),
-                                            ),
-                                            child: SizedBox(
-                                              height: 100.h,
-                                              width: width * 0.8,
-                                              child: Image.asset(
-                                                'assets/images/food$index.jpg',
-                                                fit: BoxFit.cover,
-                                              ).animate(delay: 400.ms).shimmer(
-                                                    duration: 1000.ms,
-                                                  ),
-                                            ),
-                                          ),
-
-                                          // Name Overlay
-                                          Positioned(
-                                            bottom: 0,
-                                            left: 0,
-                                            right: 0,
-                                            child: Container(
-                                              color: Colors.black54,
-                                              padding: EdgeInsets.symmetric(
-                                                  vertical: 1.h,
-                                                  horizontal: 5.w),
-                                              child: Text(
-                                                names[index],
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 12.sp,
-                                                  fontWeight: FontWeight.bold,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                ),
-                                                textAlign: TextAlign.center,
-                                              ),
-                                            ),
-                                          ),
-
-                                          // Favorite Button
-                                          Positioned(
-                                            right: 3.w,
-                                            top: 3.h,
-                                            child: AnimatedSwitcher(
-                                              duration: const Duration(
-                                                  milliseconds: 500),
-                                              transitionBuilder:
-                                                  (child, animation) {
-                                                return ScaleTransition(
-                                                    scale: animation,
-                                                    child: child);
-                                              },
-                                              child: IconButton(
-                                                onPressed: () {},
-                                                icon: Icon(
-                                                  Icons.favorite_outline,
-                                                  color: Colors.white,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-
-                                          // Product availability
-                                          // Positioned(
-                                          //   top: 40.h,
-                                          //   left: 10.w,
-                                          //   child: widget.product.isAvailable
-                                          //       ? const SizedBox()
-                                          //       : Container(
-                                          //           padding:
-                                          //               const EdgeInsets.all(4),
-                                          //           decoration:
-                                          //               const BoxDecoration(
-                                          //                   color: Colors.red),
-                                          //           child: const Text(
-                                          //             'Currently Not Available',
-                                          //             style: TextStyle(
-                                          //                 color: Colors.white),
-                                          //           ),
-                                          //         ),
-                                          // )
-                                        ],
-                                      ),
-                                      // Details Section
-                                      Padding(
-                                        padding: EdgeInsets.only(
-                                            left: 5.w, right: 5.w, top: 12.w),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceAround,
+                          itemBuilder: (context, index) {
+                            return GestureDetector(
+                              child: Padding(
+                                padding: EdgeInsets.only(
+                                  right: 12.w,
+                                ),
+                                child: LayoutBuilder(
+                                    builder: (context, constraints) {
+                                  return Container(
+                                    width: width * .39,
+                                    decoration:
+                                        getDynamicBoxDecoration(context),
+                                    child: Column(
+                                      // Use Column instead of ListView
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        // Image Section
+                                        Stack(
                                           children: [
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                ReusableText(
-                                                  text: foods[index],
-                                                  style: GoogleFonts.poppins(
-                                                    fontSize: 13.sp,
-                                                    color: ThemeUtils
-                                                        .dynamicTextColor(
-                                                            context),
-                                                    fontWeight: FontWeight.w500,
-                                                  ),
-                                                ),
-                                                Row(
-                                                  children: [
-                                                    Icon(Iconsax.clock,
-                                                        color: ThemeUtils
-                                                            .dynamicTextColor(
-                                                                context),
-                                                        size: 14.sp),
-                                                    ReusableText(
-                                                      text: ' 30 min',
-                                                      style:
-                                                          GoogleFonts.poppins(
-                                                        fontSize: 12.sp,
-                                                        color: ThemeUtils
-                                                            .dynamicTextColor(
-                                                                context),
-                                                        fontWeight:
-                                                            FontWeight.w500,
-                                                      ),
+                                            ClipRRect(
+                                              borderRadius: BorderRadius.only(
+                                                topLeft: Radius.circular(12.w),
+                                                topRight: Radius.circular(12.w),
+                                              ),
+                                              child: SizedBox(
+                                                height: 100.h,
+                                                width: width * 0.8,
+                                                child: Image.asset(
+                                                  'assets/images/food$index.jpg',
+                                                  fit: BoxFit.cover,
+                                                )
+                                                    .animate(delay: 400.ms)
+                                                    .shimmer(
+                                                      duration: 1000.ms,
                                                     ),
-                                                  ],
-                                                )
-                                              ],
+                                              ),
                                             ),
-                                            const SizedBox(height: 5),
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                ReusableText(
-                                                  text: '\$10',
-                                                  style: appStyle(
-                                                      12,
-                                                      AppColors.primaryColor,
-                                                      FontWeight.w600),
-                                                ),
-                                                Padding(
-                                                  padding: const EdgeInsets
-                                                      .symmetric(horizontal: 5),
-                                                  child: Row(
-                                                    children: [
-                                                      Icon(
-                                                        Icons.star,
-                                                        color: AppColors
-                                                            .primaryColor,
-                                                        size: 14.sp,
-                                                      ),
-                                                      ReusableText(
-                                                        text: '4.5',
-                                                        style: appStyle(
-                                                            12,
-                                                            ThemeUtils
-                                                                .dynamicTextColor(
-                                                                    context),
-                                                            FontWeight.w500),
-                                                      ),
-                                                    ],
+
+                                            // Name Overlay
+                                            Positioned(
+                                              bottom: 0,
+                                              left: 0,
+                                              right: 0,
+                                              child: Container(
+                                                color: Colors.black54,
+                                                padding: EdgeInsets.symmetric(
+                                                    vertical: 1.h,
+                                                    horizontal: 5.w),
+                                                child: Text(
+                                                  names[index],
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 12.sp,
+                                                    fontWeight: FontWeight.bold,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
                                                   ),
-                                                )
-                                              ],
+                                                  textAlign: TextAlign.center,
+                                                ),
+                                              ),
                                             ),
+
+                                            // Favorite Button
+                                            Positioned(
+                                              right: 3.w,
+                                              top: 3.h,
+                                              child: AnimatedSwitcher(
+                                                duration: const Duration(
+                                                    milliseconds: 500),
+                                                transitionBuilder:
+                                                    (child, animation) {
+                                                  return ScaleTransition(
+                                                      scale: animation,
+                                                      child: child);
+                                                },
+                                                child: IconButton(
+                                                  onPressed: () {},
+                                                  icon: Icon(
+                                                    Icons.favorite_outline,
+                                                    color: Colors.white,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+
+                                            // Product availability
+                                            // Positioned(
+                                            //   top: 40.h,
+                                            //   left: 10.w,
+                                            //   child: widget.product.isAvailable
+                                            //       ? const SizedBox()
+                                            //       : Container(
+                                            //           padding:
+                                            //               const EdgeInsets.all(4),
+                                            //           decoration:
+                                            //               const BoxDecoration(
+                                            //                   color: Colors.red),
+                                            //           child: const Text(
+                                            //             'Currently Not Available',
+                                            //             style: TextStyle(
+                                            //                 color: Colors.white),
+                                            //           ),
+                                            //         ),
+                                            // )
                                           ],
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              }),
-                            ),
-                          );
-                        },
+                                        // Details Section
+                                        Padding(
+                                          padding: EdgeInsets.only(
+                                              left: 5.w, right: 5.w, top: 12.w),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceAround,
+                                            children: [
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  ReusableText(
+                                                    text: foods[index],
+                                                    style: GoogleFonts.poppins(
+                                                      fontSize: 13.sp,
+                                                      color: ThemeUtils
+                                                          .dynamicTextColor(
+                                                              context),
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                    ),
+                                                  ),
+                                                  Row(
+                                                    children: [
+                                                      Icon(Iconsax.clock,
+                                                          color: ThemeUtils
+                                                              .dynamicTextColor(
+                                                                  context),
+                                                          size: 14.sp),
+                                                      ReusableText(
+                                                        text: ' 30 min',
+                                                        style:
+                                                            GoogleFonts.poppins(
+                                                          fontSize: 12.sp,
+                                                          color: ThemeUtils
+                                                              .dynamicTextColor(
+                                                                  context),
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  )
+                                                ],
+                                              ),
+                                              const SizedBox(height: 5),
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  ReusableText(
+                                                    text: '\$10',
+                                                    style: appStyle(
+                                                        12,
+                                                        AppColors.primaryColor,
+                                                        FontWeight.w600),
+                                                  ),
+                                                  Padding(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                        horizontal: 5),
+                                                    child: Row(
+                                                      children: [
+                                                        Icon(
+                                                          Icons.star,
+                                                          color: AppColors
+                                                              .primaryColor,
+                                                          size: 14.sp,
+                                                        ),
+                                                        ReusableText(
+                                                          text: '4.5',
+                                                          style: appStyle(
+                                                              12,
+                                                              ThemeUtils
+                                                                  .dynamicTextColor(
+                                                                      context),
+                                                              FontWeight.w500),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  )
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                }),
+                              ),
+                            );
+                          },
+                        ),
                       ),
                     ),
                   ],

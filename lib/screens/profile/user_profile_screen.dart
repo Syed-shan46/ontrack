@@ -1,5 +1,4 @@
 import 'dart:math';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -12,11 +11,9 @@ import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:ontrack/models/post_model.dart';
 import 'package:ontrack/models/product_model.dart';
-import 'package:ontrack/models/user_model.dart';
 import 'package:ontrack/providers/post_by_user_provider.dart';
 import 'package:ontrack/providers/user_provider.dart';
 import 'package:ontrack/resources/firestore_methods.dart';
-import 'package:ontrack/screens/products/add_product_screen.dart';
 import 'package:ontrack/screens/authentication/login_screen.dart';
 import 'package:ontrack/screens/products/all_live_items_screen.dart';
 import 'package:ontrack/screens/setttings/settings_screen.dart';
@@ -25,22 +22,22 @@ import 'package:ontrack/utils/helpers/box_decoration_helper.dart';
 import 'package:ontrack/utils/themes/app_colors.dart';
 import 'package:ontrack/utils/themes/theme_utils.dart';
 
-class ProfileScreen extends ConsumerStatefulWidget {
+class UserProfileScreen extends ConsumerStatefulWidget {
   final String uid;
-  final String? username;
-  final String? photoUrl;
-  const ProfileScreen({
+  final String username;
+  final String photoUrl;
+  const UserProfileScreen({
     super.key,
     required this.uid,
-    this.username,
-    this.photoUrl,
+    required this.username,
+    required this.photoUrl,
   });
 
   @override
-  ConsumerState<ProfileScreen> createState() => _ProfileScreenState();
+  ConsumerState<UserProfileScreen> createState() => _UserProfileScreenState();
 }
 
-class _ProfileScreenState extends ConsumerState<ProfileScreen> {
+class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
   late Stream<List<Product>> _productStream;
   bool isLoading = false;
   var userData = {};
@@ -100,7 +97,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
       setState(() {});
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      print('Error: $e');
     }
     setState(() {
       isLoading = false;
@@ -115,19 +112,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
-    final user = ref.watch(userProvider);
-
     final posts = ref.watch(userPostsProvider(widget.uid));
 
-    // Check if user is logged in
+    final postNotifier = ref.read(userPostsProvider(widget.uid).notifier);
 
-    if (user == null) {
-      return Center(
-        child: Container(
-          child: Text('User not found'),
-        ),
-      );
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      postNotifier.fetchUserPosts(widget.uid); // Fetch products
+    });
+
+    // Check if user is logged in
 
 //UserModel? user = Provider.of<UserProvider>(context).getUser;
 
@@ -137,15 +130,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       );
     } else {
       return DefaultTabController(
-        length: 3,
+        length: 2,
         child: Scaffold(
-          appBar: profileAppBar(user),
+          appBar: profileAppBar(),
           body: SingleChildScrollView(
             child: SafeArea(
               child: Column(
                 children: [
                   // Profile
-                  profileImage(context, isDarkMode, user),
+                  profileImage(context, isDarkMode),
                   SizedBox(height: 10),
 
                   // User Location
@@ -204,12 +197,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     }
   }
 
-  AppBar profileAppBar(UserModel user) {
+  AppBar profileAppBar() {
     return AppBar(
       centerTitle: true,
       elevation: 0,
       title: Text(
-        widget.username ?? user.username,
+        widget.username,
       ),
       actions: [
         IconButton(
@@ -255,38 +248,56 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           height: 80.h,
                           decoration: getDynamicBoxDecoration(context),
                           child: ClipRRect(
-                            borderRadius: BorderRadius.circular(15.r),
-                            child: Stack(
-                              children: [
-                                // Item Image
-                                Image.network(
-                                  product.photoUrl,
-                                  fit: BoxFit.cover,
-                                  width: 80.w,
-                                  height: 80.h,
-                                ), // Item Name Overlay
-                                Align(
-                                  alignment: Alignment.bottomCenter,
-                                  child: Container(
+                              borderRadius: BorderRadius.circular(15.r),
+                              child: Stack(
+                                children: [
+                                  // Item Image
+                                  CachedNetworkImage(
+                                    imageUrl: product.photoUrl,
+                                    fit: BoxFit.cover,
                                     width: 80.w,
-                                    color: Colors.black54,
-                                    padding: EdgeInsets.symmetric(
-                                        vertical: 2.h, horizontal: 5.w),
-                                    child: Text(
-                                      'Mandhi periperi ${index + 1}',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 10.sp,
-                                        fontWeight: FontWeight.bold,
-                                        overflow: TextOverflow.ellipsis,
+                                    height: 80.h,
+                                  ),
+                                  // "Not Available" Overlay if product is unavailable
+                                  if (!product.isAvailable)
+                                    Container(
+                                      width: 80.w,
+                                      height: 80.h,
+                                      color: Colors.black
+                                          .withOpacity(0.6), // Dark overlay
+                                      alignment: Alignment.center,
+                                      child: Text(
+                                        "Not Available",
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 12.sp,
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
-                                      textAlign: TextAlign.center,
+                                    ),
+
+                                  // Item Name Overlay
+                                  Align(
+                                    alignment: Alignment.bottomCenter,
+                                    child: Container(
+                                      width: 80.w,
+                                      color: Colors.black54,
+                                      padding: EdgeInsets.symmetric(
+                                          vertical: 2.h, horizontal: 5.w),
+                                      child: Text(
+                                        product.name,
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 10.sp,
+                                          fontWeight: FontWeight.bold,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ],
-                            ),
-                          ),
+                                ],
+                              )),
                         ),
                         // Add Button
                         Positioned(
@@ -358,69 +369,94 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
   SizedBox tabBarViewSection(List<Post> posts) {
     return SizedBox(
-      height: 300,
-      child: TabBarView(children: [
-        SizedBox(
-          height: 400,
-          child: GridView.builder(
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-              crossAxisSpacing: 8,
-              mainAxisSpacing: 8,
-              childAspectRatio: 0.8, // Adjusted for better layout
-            ),
-            padding: const EdgeInsets.all(8),
-            itemCount: posts.length,
-            itemBuilder: (context, index) {
-              final post = posts[index];
-              return Card(
-                margin: const EdgeInsets.symmetric(vertical: 10),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: Image.network(
-                          post.postUrl,
-                          fit: BoxFit.cover,
-                          width: double.infinity,
-                          height: 150, // Adjusted for uniformity
+      height: 300.h,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Column(
+          children: [
+            Expanded(
+              child: TabBarView(
+                children: [
+                  // grid view
+                  GridView.builder(
+                    shrinkWrap: true,
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      crossAxisSpacing: 5,
+                      mainAxisSpacing: 5,
+                    ),
+                    itemCount: posts.length,
+                    itemBuilder: (context, index) {
+                      final post = posts[index];
+                      return Card(
+                        margin: const EdgeInsets.symmetric(vertical: 10),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
                         ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Row(
-                        children: [
-                          Icon(Icons.favorite,
-                              color: post.likes.isNotEmpty
-                                  ? Colors.red
-                                  : Colors.grey),
-                          const SizedBox(width: 5),
-                          Expanded(
-                            child: Text(
-                              "${post.likeCount} likes",
-                              style: TextStyle(
-                                  color: ThemeUtils.dynamicTextColor(context),
-                                  fontWeight: FontWeight.w600),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: Stack(
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(10),
+                                    child: Image.network(
+                                      post.postUrl,
+                                      fit: BoxFit.cover,
+                                      width: double.infinity,
+                                      height: 150, // Adjusted for uniformity
+                                    ),
+                                  ),
+                                  Positioned(
+                                      left: 5.w,
+                                      bottom: 0,
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.favorite_rounded,
+                                            color: Colors.white.withAlpha(200),
+                                          ),
+                                          const SizedBox(width: 5),
+                                          Text(
+                                            "${post.likeCount}",
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        ],
+                                      ))
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                  // video view
+                  GridView.builder(
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      crossAxisSpacing: 5,
+                      mainAxisSpacing: 5,
                     ),
-                  ],
-                ),
-              );
-            },
-          ),
-        ), // Center(child: Text("Video View")),
-        Center(child: Text("Favorites View")),
-        Center(child: Text("Favorites View")),
-      ]),
+                    itemCount: postLen,
+                    itemBuilder: (context, index) {
+                      return Container(
+                        color: Colors.blue,
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -438,7 +474,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       tabs: [
         Tab(icon: Icon(Icons.grid_view, color: AppColors.primaryColor)),
         Tab(icon: Icon(Icons.videocam, color: Colors.grey.shade500)),
-        Tab(icon: Icon(Icons.favorite, color: Colors.grey.shade500)),
       ],
     );
   }
@@ -547,7 +582,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         _buildStatItem(posts.length.toString(), 'Posts', context),
         // followers
         StreamBuilder<DocumentSnapshot>(
-          stream: getUserStream(widget.uid),
+          stream: getUserStream(widget.uid!),
           builder: (context, snapshot) {
             if (snapshot.hasData && snapshot.data!.exists) {
               followers = snapshot.data!['followers'].length;
@@ -592,7 +627,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     );
   }
 
-  Stack profileImage(BuildContext context, bool isDarkMode, UserModel user) {
+  Stack profileImage(BuildContext context, bool isDarkMode) {
     return Stack(
       alignment: Alignment.center,
       children: [
@@ -635,7 +670,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             backgroundColor: Colors.grey,
             radius: 35,
             backgroundImage: CachedNetworkImageProvider(
-              widget.photoUrl ?? user.photoUrl,
+              widget.photoUrl ??
+                  'https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png',
             ),
           ),
         ),
@@ -668,55 +704,14 @@ class _TabBarSectionState extends State<TabBarSection>
       unselectedLabelColor: Colors.grey,
       controller: _tabController,
       tabs: const [
-        Tab(icon: Icon(Iconsax.grid_3)),
-        Tab(icon: Icon(Iconsax.video)),
+        Tab(
+          icon: Icon(Iconsax.grid_3),
+        ),
+        Tab(
+          icon: Icon(Iconsax.video),
+        ),
         Tab(icon: Icon(Iconsax.tag)),
       ],
-    );
-  }
-}
-
-class TabBarViewSection extends StatelessWidget {
-  const TabBarViewSection({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: TabBarView(
-        children: [
-// Posts Section
-          GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: 9, // Number of posts
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-              crossAxisSpacing: 2,
-              mainAxisSpacing: 2,
-            ),
-            itemBuilder: (context, index) {
-              return Container(
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage(
-                      'assets/images/food$index.jpg',
-                    ),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              );
-            },
-          ),
-// Reels Section
-          Center(
-            child: Text("Reels Section"),
-          ),
-// Tagged Section
-          Center(
-            child: Text("Tagged Section"),
-          ),
-        ],
-      ),
     );
   }
 }

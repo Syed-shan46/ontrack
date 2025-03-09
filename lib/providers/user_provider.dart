@@ -39,7 +39,7 @@ class UserNotifier extends StateNotifier<UserModel?> {
     state = null;
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('user'); // Remove user from storage
-    Get.offAll(() => LoginScreen());
+    Get.to(() => LoginScreen());
   }
 
   // Fetch user from Firestore

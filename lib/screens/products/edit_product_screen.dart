@@ -4,20 +4,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:ontrack/common/textfield/custom_textfield.dart';
-import 'package:ontrack/controller/product_controller.dart';
 import 'package:ontrack/models/product_model.dart';
 
 class EditProductScreen extends ConsumerStatefulWidget {
   final Product product;
 
-  const EditProductScreen({Key? key, required this.product}) : super(key: key);
+  const EditProductScreen({super.key, required this.product});
 
   @override
   ConsumerState createState() => _EditProductScreenState();
 }
 
 class _EditProductScreenState extends ConsumerState<EditProductScreen> {
-  final ProductController _productController = ProductController();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;

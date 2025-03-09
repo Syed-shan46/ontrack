@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:ontrack/models/comment_model.dart';
-import 'package:ontrack/screens/profile/profile_screen.dart';
+import 'package:ontrack/screens/profile/user_profile_screen.dart';
 import 'package:ontrack/utils/themes/theme_utils.dart';
 
 class CommentCard extends ConsumerWidget {
@@ -22,7 +22,7 @@ class CommentCard extends ConsumerWidget {
           GestureDetector(
               onTap: () {
                 Get.to(
-                  () => ProfileScreen(
+                  () => UserProfileScreen(
                     uid: comment.uid,
                     username: comment.name,
                     photoUrl: comment.profilePic,

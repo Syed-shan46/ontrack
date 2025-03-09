@@ -5,12 +5,17 @@ class Product {
   final String name;
   final String photoUrl;
   final double price;
+  final bool isAvailable;
+  final String category;
 
-  Product(
-      {required this.name,
-      required this.id,
-      required this.price,
-      required this.photoUrl});
+  Product({
+    required this.name,
+    required this.id,
+    required this.price,
+    required this.photoUrl,
+    required this.isAvailable,
+    required this.category,
+  });
 
   Map<String, dynamic> toMap() {
     return {
@@ -18,6 +23,8 @@ class Product {
       'name': name,
       'photoUrl': photoUrl,
       'price': price,
+      'isAvailable': isAvailable,
+      'category': category,
     };
   }
 
@@ -28,6 +35,8 @@ class Product {
       name: data['name'] ?? '',
       photoUrl: data['photoUrl'] ?? '',
       price: (data['price'] ?? 0).toDouble(),
+      isAvailable: data['isAvailable'] ?? false,
+      category: data['category'] ?? '',
     );
   }
 }

@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:ontrack/firebase_options.dart';
 import 'package:ontrack/navigation_menu.dart';
+import 'package:ontrack/providers/riv_auth_provider.dart';
 import 'package:ontrack/screens/authentication/login_screen.dart';
 import 'package:ontrack/utils/themes/dark_theme.dart';
 import 'package:ontrack/utils/themes/light_theme.dart';
@@ -16,14 +17,14 @@ void main() async {
   runApp(riverpod.ProviderScope(child: MyApp()));
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends riverpod.ConsumerStatefulWidget {
   const MyApp({super.key});
 
   @override
-  State<MyApp> createState() => _MyAppState();
+  riverpod.ConsumerState<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _MyAppState extends riverpod.ConsumerState<MyApp> {
   final ValueNotifier<User?> _userNotifier =
       ValueNotifier(FirebaseAuth.instance.currentUser);
 
@@ -37,6 +38,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    final authState = ref.watch(authStateProvider);
     return ScreenUtilInit(
       child: GetMaterialApp(
         debugShowCheckedModeBanner: false,
@@ -44,15 +46,21 @@ class _MyAppState extends State<MyApp> {
         themeMode: ThemeMode.system,
         theme: lightTheme,
         darkTheme: darkTheme,
-        home: ValueListenableBuilder<User?>(
-          valueListenable: _userNotifier,
-          builder: (context, user, child) {
+        home: authState.when(
+          data: (user) {
             if (user != null) {
-              return const NavigationMenu();
+              return const NavigationMenu(); // User is logged in
             } else {
-              return const LoginScreen();
+              return const NavigationMenu(); // User is not logged in
             }
           },
+          loading: () => Scaffold(
+            body: Center(
+                child: CircularProgressIndicator()), // Show loading indicator
+          ),
+          error: (err, stack) => Scaffold(
+            body: Center(child: Text("Error: $err")), // Show error message
+          ),
         ),
       ),
     );

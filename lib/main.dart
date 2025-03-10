@@ -7,7 +7,6 @@ import 'package:get/get.dart';
 import 'package:ontrack/firebase_options.dart';
 import 'package:ontrack/navigation_menu.dart';
 import 'package:ontrack/providers/riv_auth_provider.dart';
-import 'package:ontrack/screens/authentication/login_screen.dart';
 import 'package:ontrack/utils/themes/dark_theme.dart';
 import 'package:ontrack/utils/themes/light_theme.dart';
 

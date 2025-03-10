@@ -4,7 +4,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:ontrack/common/style/app_style.dart';
 import 'package:ontrack/common/style/reusable_text.dart';
-import 'package:ontrack/utils/themes/app_colors.dart';
 import 'package:ontrack/utils/themes/theme_utils.dart';
 
 class Heading extends StatelessWidget {
@@ -31,11 +30,11 @@ class Heading extends StatelessWidget {
           ),
           // IconButton
           IconButton(
-            onPressed: () {},
+            onPressed: ontap,
             icon: SvgPicture.asset(
               'assets/icons/more-7.svg',
               height: 23,
-              color: AppColors.primaryColor.withOpacity(0.8),
+              color: ThemeUtils.dynamicTextColor(context).withAlpha(190),
             ),
           ),
         ],

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ontrack/common/controllers/home_controller.dart';
 import 'package:ontrack/utils/themes/app_colors.dart';
+import 'package:ontrack/utils/themes/theme_utils.dart';
 
 class MyDotNavigation extends StatelessWidget {
   final int dotCount;
@@ -29,7 +30,7 @@ class MyDotNavigation extends StatelessWidget {
                       : 10, // Dynamically resize for active dot
                   decoration: BoxDecoration(
                     color: controller.carousalCurrentIndex.value == i
-                        ? AppColors.primaryColor
+                        ? ThemeUtils.dynamicTextColor(context)
                         : Colors.grey,
                     borderRadius: i == 0
                         ? const BorderRadius.only(

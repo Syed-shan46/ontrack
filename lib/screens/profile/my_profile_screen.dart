@@ -15,7 +15,6 @@ import 'package:ontrack/models/product_model.dart';
 import 'package:ontrack/models/user_model.dart';
 import 'package:ontrack/providers/post_by_user_provider.dart';
 import 'package:ontrack/providers/user_provider.dart';
-import 'package:ontrack/resources/firestore_methods.dart';
 import 'package:ontrack/screens/authentication/login_screen.dart';
 import 'package:ontrack/screens/products/all_live_items_screen.dart';
 import 'package:ontrack/screens/setttings/settings_screen.dart';

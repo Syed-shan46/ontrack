@@ -66,4 +66,9 @@ class MySizes {
 
   // Grid view spacing
   static const double gridViewSpacing = 16.0;
+
+  // alpha values for colors
+  static const int alphaLow = 100;
+  static const int alphaMed = 150;
+  static const int alphaHigh = 200;
 }

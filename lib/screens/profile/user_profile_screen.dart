@@ -582,7 +582,7 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
         _buildStatItem(posts.length.toString(), 'Posts', context),
         // followers
         StreamBuilder<DocumentSnapshot>(
-          stream: getUserStream(widget.uid!),
+          stream: getUserStream(widget.uid),
           builder: (context, snapshot) {
             if (snapshot.hasData && snapshot.data!.exists) {
               followers = snapshot.data!['followers'].length;

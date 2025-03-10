@@ -4,14 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'package:latlong2/latlong.dart';
 import 'package:ontrack/providers/user_provider.dart';
 import 'package:ontrack/utils/themes/app_colors.dart';
-import 'package:ontrack/utils/themes/theme_utils.dart';
 
 class HomeHeader extends ConsumerStatefulWidget {
   const HomeHeader({
@@ -135,55 +133,60 @@ class _HomeHeaderState extends ConsumerState<HomeHeader> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Padding(
-        padding: EdgeInsets.only(left: 2.w, top: 5.h, bottom: 2.h),
-        child: Row(
-          children: [
-            IconButton(
-              onPressed: () {
-                ref.read(userProvider.notifier).logout();
-              },
-              icon: Icon(
-                AntDesign.home,
-                color: ThemeUtils.dynamicTextColor(context),
+    return Container(
+      color: AppColors.accentColor,
+      child: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.only(left: 2.w, top: 5.h, bottom: 2.h),
+          child: Row(
+            children: [
+              IconButton(
+                onPressed: () {
+                  ref.read(userProvider.notifier).logout();
+                },
+                icon: Icon(
+                  CupertinoIcons.location,
+                  color: Colors.white,
+                ),
               ),
-            ),
 
-            // Left side with welcome title
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min, // Adjusts height to fit content
-                children: [
-                  scanning
-                      ? const SpinKitThreeBounce(
-                          color: AppColors.primaryColor, size: 10)
-                      : Text(
-                          address,
-                          style: TextStyle(
-                            color: ThemeUtils.dynamicTextColor(context),
-                            fontSize: 9.sp,
-                            fontWeight: FontWeight.normal,
+              // Left side with welcome title
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize:
+                      MainAxisSize.min, // Adjusts height to fit content
+                  children: [
+                    scanning
+                        ? const SpinKitThreeBounce(
+                            color: AppColors.primaryColor, size: 10)
+                        : Text(
+                            address,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 9.sp,
+                              fontWeight: FontWeight.normal,
+                            ),
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            Icon(
-              CupertinoIcons.chevron_forward,
-              size: 12.sp,
-            ),
-            // Cart icon on the right side
-            Padding(
-              padding: const EdgeInsets.only(right: 5), // Consistent padding
-              child: Text(
-                getTimeOfDay(),
-                style: const TextStyle(fontSize: 25),
+              Icon(
+                CupertinoIcons.chevron_forward,
+                color: Colors.white,
+                size: 12.sp,
               ),
-            ),
-          ],
+              // Cart icon on the right side
+              Padding(
+                padding: const EdgeInsets.only(right: 5), // Consistent padding
+                child: Text(
+                  getTimeOfDay(),
+                  style: const TextStyle(fontSize: 25),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
